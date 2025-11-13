@@ -11,6 +11,8 @@ This file: tsp_backtracking.cpp
 Note: This implementation uses backtracking with pruning by current path cost. It is suitable for small n (n<=12-13). For full LC Branch & Bound with reduced matrix cost, a more elaborate implementation can be added later.
 */
 
+// TSP using backtracking with simple pruning (Branch & Bound idea)
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -20,9 +22,12 @@ vector<int> bestPath;
 int bestCost = INT_MAX;
 
 void dfs(int node, vector<int>& visited, vector<int>& path, int currentCost) {
-    if (currentCost >= bestCost) return; // prune
-    if ((int)path.size() == n) {
-        // complete cycle back to start
+
+    // Stop if current path already worse than best
+    if (currentCost >= bestCost) return;
+
+    // If all cities visited, close the cycle
+    if (path.size() == n) {
         int total = currentCost + distmat[node][path[0]];
         if (total < bestCost) {
             bestCost = total;
@@ -30,11 +35,15 @@ void dfs(int node, vector<int>& visited, vector<int>& path, int currentCost) {
         }
         return;
     }
+
+    // Try all unvisited cities
     for (int nxt = 0; nxt < n; ++nxt) {
         if (!visited[nxt]) {
             visited[nxt] = 1;
             path.push_back(nxt);
+
             dfs(nxt, visited, path, currentCost + distmat[node][nxt]);
+
             path.pop_back();
             visited[nxt] = 0;
         }
@@ -42,33 +51,25 @@ void dfs(int node, vector<int>& visited, vector<int>& path, int currentCost) {
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    cout << "Enter number of cities (n): ";
-    if(!(cin >> n)) return 0;
+    cin >> n;
     distmat.assign(n, vector<int>(n));
-    cout << "Enter adjacency matrix (n x n):\n";
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            cin >> distmat[i][j];
-        }
-    }
 
-    vector<int> visited(n, 0);
-    vector<int> path;
-    // start from city 0
-    visited[0] = 1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            cin >> distmat[i][j];
+
+    vector<int> visited(n, 0), path;
+
+    visited[0] = 1;       // fix starting city
     path.push_back(0);
+
     dfs(0, visited, path, 0);
 
     if (bestCost == INT_MAX) {
-        cout << "No Hamiltonian cycle found or input invalid.\n";
+        cout << "No cycle.\n";
     } else {
-        cout << "Best cost: " << bestCost << "\n";
-        cout << "Path: ";
+        cout << "Best cost: " << bestCost << "\nPath: ";
         for (int v : bestPath) cout << v << " -> ";
-        cout << bestPath[0] << "\n"; // return to start
+        cout << bestPath[0] << "\n";  // return to start
     }
-    return 0;
 }

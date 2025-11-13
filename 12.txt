@@ -8,3 +8,5 @@ rm -f ~/.local/share/recently-used.xbel ~/.config/nautilus/history && \
 rm -rf ~/.cache/thumbnails/* && \
 grep -v "/media/" ~/.bash_history | grep -v "/run/media/" > ~/.bash_history.tmp 2>/dev/null && mv ~/.bash_history.tmp ~/.bash_history && \
 history -c && history -w
+
+g++ filename.cpp -o outputname
